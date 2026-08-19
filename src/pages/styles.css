@@ -7,9 +7,9 @@
     background: #1f2a84;
     color: white;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 28px;
     font-size: 30px;
-    font-weight: bold;
+    font-weight: bold; 
 }
 
 .metric-card {
