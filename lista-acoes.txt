@@ -1,0 +1,7 @@
+1 - buscar a carga pendente
+2 - tratar a carga pendente transformando em estrutura de dados
+
+3 - buscar a base de custos de mesas de serigrafia
+4 - transformar em dados em estrutura de dados
+
+5 - 

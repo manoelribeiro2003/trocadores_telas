@@ -11,19 +11,25 @@ st.set_page_config(
 
 css_file = Path(__file__).parent / "styles.css"
 
-with open(css_file) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+with open(css_file) as css:
+    # carregar o css
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+    # carregar a barra de titulo
+    st.markdown(
+                f"""
+                <div class='title-bar'>
+                    MONITORAMENTO DAS OSCILAÇÕES DE EFETIVOS TS7
+                </div>
 
-st.markdown(
-    """
-    <div class='title-bar'>
-        MONITORAMENTO DAS OSCILAÇÕES DE EFETIVOS TS7
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+                <div>
+                
+                </div>
 
-st.markdown("## MONTAGEM")
+                ## MONTAGEM
+
+                """,
+                unsafe_allow_html=True
+            )
 
 equipamentos = [
     "S7M01","S7M02","S7M03","S7M05",
@@ -60,63 +66,52 @@ with c2:
 
 with c3:
 
-    col_filtro, col_graf = st.columns([1,3])
+    fig = go.Figure()
 
-    with col_filtro:
-        equipamentos_sel = st.multiselect(
-            "Equipamento",
-            equipamentos,
-            default=["S7M22"]
+    fig.add_trace(
+        go.Scatter(
+            x=horas,
+            y=oscilacao,
+            mode="lines+markers+text",
+            text=oscilacao,
+            textposition="top center",
+            line=dict(color="#1f2a84", width=3)
         )
+    )
 
-    with col_graf:
+    fig.update_layout(
+        height=250,
+        margin=dict(
+            l=10,
+            r=10,
+            t=30,
+            b=10
+        ),
+        title="Efetivo Hora a Hora",
+        paper_bgcolor="white",
+        plot_bgcolor="white"
+    )
 
-        fig = go.Figure()
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
-        fig.add_trace(
-            go.Scatter(
-                x=horas,
-                y=oscilacao,
-                mode="lines+markers+text",
-                text=oscilacao,
-                textposition="top center",
-                line=dict(color="#1f2a84", width=3)
-            )
-        )
+# st.markdown(
+#     "<div class='section-title'>Oscilação de Efetivo</div>",
+#     unsafe_allow_html=True
+# )
 
-        fig.update_layout(
-            height=250,
-            margin=dict(
-                l=10,
-                r=10,
-                t=30,
-                b=10
-            ),
-            title="Efetivo Hora a Hora",
-            paper_bgcolor="white",
-            plot_bgcolor="white"
-        )
+# df_oscilacao = pd.DataFrame({
+#     f"{h} Efetivo": [v]
+#     for h,v in zip(horas, oscilacao)
+# })
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-st.markdown(
-    "<div class='section-title'>Oscilação de Efetivo</div>",
-    unsafe_allow_html=True
-)
-
-df_oscilacao = pd.DataFrame({
-    f"{h} Efetivo": [v]
-    for h,v in zip(horas, oscilacao)
-})
-
-st.dataframe(
-    df_oscilacao,
-    use_container_width=True,
-    hide_index=True
-)
+# st.dataframe(
+#     df_oscilacao,
+#     use_container_width=True,
+#     hide_index=True
+# )
 
 dados = pd.DataFrame(
     np.zeros((len(equipamentos), len(horas))),
