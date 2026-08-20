@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.graph_objs.scatter._textfont as tfonte
 import numpy as np
 from pathlib import Path
 
@@ -9,44 +10,56 @@ st.set_page_config(
     layout="wide"
 )
 
+equipamentos = [
+    f"S7M{n:02d}"
+    for n in range(1, 19)
+]
+
+horas = [
+        f"{h:02d}:00" 
+        for h in range(5, 24)
+    ] + ["00:00"]
+
+dados_tabela = pd.DataFrame(
+    np.zeros((len(equipamentos), len(horas))).round(decimals=0),
+    index=equipamentos,
+    columns=horas
+)
+
+dados_tabela.loc["S7M07","13:00"] = -4
+dados_tabela.loc["S7M17","14:00"] = -1
+dados_tabela.loc["S7M22","06:00"] = -1
+dados_tabela.loc["S7M08","08:00"] = 2
+dados_tabela.loc["S7M22","08:00"] = 2
+
+oscilacao = dados_tabela.sum(axis=0).tolist()
+
+st.markdown(oscilacao)
+
 css_file = Path(__file__).parent / "styles.css"
 
 with open(css_file) as css:
     # carregar o css
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
     # carregar a barra de titulo
-    st.markdown(
-                f"""
+    st.markdown("""
                 <div class='title-bar'>
                     MONITORAMENTO DAS OSCILAÇÕES DE EFETIVOS TS7
                 </div>
-
-                <div>
-                
-                </div>
-
-                ## MONTAGEM
-
                 """,
-                unsafe_allow_html=True
-            )
+                unsafe_allow_html=True)
+    st.markdown('### TROCADORES DE TELAS')
 
-equipamentos = [
-    "S7M01","S7M02","S7M03","S7M05",
-    "S7M07","S7M08","S7M10","S7M11",
-    "S7M12","S7M13","S7M14","S7M17",
-    "S7M18","S7M19","S7M22"
-]
 
-horas = [
-    "05:00","06:00","07:00","08:00",
-    "09:00","10:00","11:00","12:00",
-    "13:00","14:00","15:00"
-]
 
-oscilacao = [0, -1, 0, 2, 0, 0, 0, 0, -4, -1, 0]
+
+
+st.markdown(f"{equipamentos}")
+
 
 c1, c2, c3 = st.columns([1,1,5])
+
+
 
 with c1:
     st.markdown("""
@@ -67,6 +80,7 @@ with c2:
 with c3:
 
     fig = go.Figure()
+    textfont = tfonte.Textfont(size=20)
 
     fig.add_trace(
         go.Scatter(
@@ -75,7 +89,8 @@ with c3:
             mode="lines+markers+text",
             text=oscilacao,
             textposition="top center",
-            line=dict(color="#1f2a84", width=3)
+            line=dict(color="#1f2a84", width=3),
+            textfont=textfont
         )
     )
 
@@ -113,16 +128,11 @@ with c3:
 #     hide_index=True
 # )
 
-dados = pd.DataFrame(
-    np.zeros((len(equipamentos), len(horas))),
-    index=equipamentos,
-    columns=horas
-)
-
-dados.loc["S7M07","13:00"] = -4
-dados.loc["S7M17","14:00"] = -1
-dados.loc["S7M22","06:00"] = -1
-dados.loc["S7M08","08:00"] = 2
+dados_tabela.loc["S7M07","13:00"] = -4
+dados_tabela.loc["S7M17","14:00"] = -1
+dados_tabela.loc["S7M22","06:00"] = -1
+dados_tabela.loc["S7M08","08:00"] = 2
+dados_tabela.loc["S7M22","08:00"] = 2
 
 st.markdown(
     "<div class='section-title'>Hora a Hora</div>",
@@ -136,9 +146,16 @@ def destacar(valor):
             "color:white;"
             "font-weight:bold;"
         )
+    elif valor > 0:
+        return(
+            "background-color:green;"
+            "color:white;"
+            "font-weight:bold;"
+        )
     return ""
 
 st.dataframe(
-    dados.style.map(destacar),
-    use_container_width=True
+    dados_tabela.style.map(destacar),
+    use_container_width=True,
+
 )

@@ -6,7 +6,8 @@
 .title-bar {
     background: #1f2a84;
     color: white;
-    padding: 15px;
+    padding: 5px;
+    padding-left: 15px;
     border-radius: 15px;
     font-size: 30px;
     font-weight: bold; 
