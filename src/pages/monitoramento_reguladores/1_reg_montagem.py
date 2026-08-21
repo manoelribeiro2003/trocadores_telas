@@ -5,10 +5,7 @@ import plotly.graph_objs.scatter._textfont as tfonte
 import numpy as np
 from pathlib import Path
 
-st.set_page_config(
-    page_title="Monitoramento TS7",
-    layout="wide"
-)
+st.set_page_config(page_title="Monitoramento Reguladores Montagem",layout="wide")
 
 equipamentos = [
     f"S7M{n:02d}"
@@ -34,9 +31,9 @@ dados_tabela.loc["S7M22","08:00"] = 2
 
 oscilacao = dados_tabela.sum(axis=0).tolist()
 
-st.markdown(oscilacao)
+# st.markdown(oscilacao)
 
-css_file = Path(__file__).parent / "styles.css"
+css_file = Path(__file__).parent.parent / 'styles.css'
 
 with open(css_file) as css:
     # carregar o css
@@ -44,7 +41,7 @@ with open(css_file) as css:
     # carregar a barra de titulo
     st.markdown("""
                 <div class='title-bar'>
-                    MONITORAMENTO DAS OSCILAÇÕES DE EFETIVOS TS7
+                    MONITORAMENTO HORA A HORA 
                 </div>
                 """,
                 unsafe_allow_html=True)
@@ -54,7 +51,7 @@ with open(css_file) as css:
 
 
 
-st.markdown(f"{equipamentos}")
+# st.markdown(f"{equipamentos}")
 
 
 c1, c2, c3 = st.columns([1,1,5])
